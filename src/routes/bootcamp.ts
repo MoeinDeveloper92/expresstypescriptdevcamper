@@ -8,6 +8,7 @@ import {
 } from '../controllers/bootcamps';
 const router = express.Router();
 
+//we bind each rout to corresponding controller
 router.route('/').get(getBootcamps).post(createBootcamp);
 router
   .route('/:id')
