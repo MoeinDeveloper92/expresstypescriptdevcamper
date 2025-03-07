@@ -13,6 +13,10 @@ const PORT = process.env.PORT || 8000;
 mongoClient.connectDB();
 const app: Express = express();
 
+//Body Parse
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
 const runServer = () => {
   //Tiny Loggin Middleware
   if (process.env.NODE_ENV === 'development') {

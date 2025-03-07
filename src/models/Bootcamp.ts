@@ -1,6 +1,6 @@
 import { Schema, model, InferSchemaType } from 'mongoose';
 
-const BootcampSchema = new Schema({
+export const BootcampSchema = new Schema({
   name: {
     type: String,
     required: [true, 'Please add a name!'],
@@ -36,25 +36,25 @@ const BootcampSchema = new Schema({
     type: String,
     required: [true, 'Please add an address!'],
   },
-  location: {
-    // GeoJSON Point
-    type: {
-      type: String,
-      enum: ['Point'],
-      required: true,
-    },
-    coordinates: {
-      type: [Number],
-      required: true,
-      index: '2dsphere',
-    },
-    formattedAddress: String,
-    street: String,
-    city: String,
-    state: String,
-    zipcode: String,
-    country: String,
-  },
+  //   location: {
+  //     // GeoJSON Point
+  //     type: {
+  //       type: String,
+  //       enum: ['Point'],
+  //       required: true,
+  //     },
+  //     coordinates: {
+  //       type: [Number],
+  //       required: true,
+  //       index: '2dsphere',
+  //     },
+  //     formattedAddress: String,
+  //     street: String,
+  //     city: String,
+  //     state: String,
+  //     zipcode: String,
+  //     country: String,
+  //   },
   careers: {
     //Array of strings
     type: [String],
@@ -63,7 +63,7 @@ const BootcampSchema = new Schema({
       'Web Development',
       'Mobile Development',
       'UI/UX',
-      'Data Sceince',
+      'Data Science',
       'Business',
       'Other',
     ],
