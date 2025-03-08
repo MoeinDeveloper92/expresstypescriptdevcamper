@@ -1,4 +1,6 @@
 import { Schema, model, InferSchemaType } from 'mongoose';
+import slugify from 'slugify';
+import { geocodedAddress } from '../utils/geocoder';
 
 export const BootcampSchema = new Schema({
   name: {
@@ -35,26 +37,27 @@ export const BootcampSchema = new Schema({
   address: {
     type: String,
     required: [true, 'Please add an address!'],
+    select: false,
   },
-  //   location: {
-  //     // GeoJSON Point
-  //     type: {
-  //       type: String,
-  //       enum: ['Point'],
-  //       required: true,
-  //     },
-  //     coordinates: {
-  //       type: [Number],
-  //       required: true,
-  //       index: '2dsphere',
-  //     },
-  //     formattedAddress: String,
-  //     street: String,
-  //     city: String,
-  //     state: String,
-  //     zipcode: String,
-  //     country: String,
-  //   },
+  location: {
+    // GeoJSON Point
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: false,
+    },
+    coordinates: {
+      type: [Number],
+      required: false,
+      index: '2dsphere',
+    },
+    formattedAddress: String,
+    street: String,
+    city: String,
+    state: String,
+    zipcode: String,
+    country: String,
+  },
   careers: {
     //Array of strings
     type: [String],
@@ -100,6 +103,31 @@ export const BootcampSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+});
+
+//Create bootcamp slug from the name
+BootcampSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+//geocode & create location field in DB
+BootcampSchema.pre('save', async function (next) {
+  const loc = await geocodedAddress(this.address);
+  console.log(loc);
+  this.location = {
+    type: 'Point',
+    coordinates: [loc.items[0].position.lng, loc.items[0].position.lat],
+    formattedAddress: loc.items[0].address.label,
+    street: loc.items[0].address.street,
+    zipcode: loc.items[0].address.postalCode,
+    city: loc.items[0].address.city,
+    state: loc.items[0].address.state,
+    country: loc.items[0].address.country,
+  };
+  //Do not save address in DB
+  this.set('address', undefined);
+  next();
 });
 
 export interface IBootcamp extends InferSchemaType<typeof BootcampSchema> {}

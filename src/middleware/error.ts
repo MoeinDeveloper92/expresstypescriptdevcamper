@@ -23,6 +23,25 @@ export const errorHandler = (
     });
   }
 
+  //Mongoose Duplicate Key
+  if ((err as any).code === 11000) {
+    const field = Object.keys((err as any).keyValue)[0];
+    const message = `Duplicate value entered for ${field}: "${
+      (err as any).keyValue[field]
+    }"`;
+    error = new ErrorResponse(message, 400);
+  }
+
+  //Mongoose validation Error
+  if (
+    err instanceof mongoose.Error.ValidationError &&
+    err.name === 'ValidationError'
+  ) {
+    const message = Object.values(err.errors).map((val) => val.message);
+
+    error = new ErrorResponse(message, 400);
+  }
+
   res.status(error.statusCode || 500).json({
     success: false,
     message: error.message,
