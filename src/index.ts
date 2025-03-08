@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import morgan from 'morgan';
 import 'colorts/lib/string';
 import { mongoClient } from './config/db';
+
+import { errorHandler } from './middleware/error';
 import bootcampRoute from './routes/bootcamp';
 
 //Config env, and Load env vars
@@ -38,6 +40,8 @@ const runServer = () => {
         .bgCyan.underline.bold
     );
   });
+
+  app.use(errorHandler);
 
   //Hanlde unhandled rejections / Promise Rejections
   process.on('unhandledRejection', (error: Error, promise: Promise<any>) => {
