@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/seeder.ts","./src/config/db.ts","./src/controllers/bootcamps.ts","./src/errors/badrequest.ts","./src/errors/errorresponse.ts","./src/middleware/async.ts","./src/middleware/error.ts","./src/middleware/logger.ts","./src/models/bootcamp.ts","./src/routes/bootcamp.ts","./src/utils/errorresponse.ts","./src/utils/geocoder.ts"],"version":"5.8.2"}

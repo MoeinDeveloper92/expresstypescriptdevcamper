@@ -2,10 +2,11 @@
   "name": "expresstypescriptdevcamper",
   "version": "1.0.0",
   "description": "Creating DevCamp API with Express/TS",
-  "main": "./dist/index.js",
+  "main": "/dist/index.js",
   "scripts": {
-    "start:dev": "nodemon src/index.ts",
-    "start:prod": "NODE_ENV=production nodemon src/index.ts"
+    "build": "tsc --build",
+    "start:dev": "nodemon dist/index.js",
+    "start:prod": "NODE_ENV=production nodemon dist/index.js"
   },
   "keywords": [],
   "author": "",
