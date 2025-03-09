@@ -117,6 +117,9 @@ exports.BootcampSchema = new mongoose_1.Schema({
         type: Date,
         default: Date.now,
     },
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
 });
 //Create bootcamp slug from the name
 exports.BootcampSchema.pre('save', function (next) {
@@ -141,5 +144,21 @@ exports.BootcampSchema.pre('save', function (next) {
         this.set('address', undefined);
         next();
     });
+});
+//Cascade delete courses when a bootcamp is deleted!
+exports.BootcampSchema.post('findOneAndDelete', function (doc) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (doc) {
+            console.log(`Deleting courses for bootcamp: ${doc._id}`);
+            yield doc.model('Courses').deleteMany({ bootcamp: doc._id });
+        }
+    });
+});
+//reverse populate with virtuals
+exports.BootcampSchema.virtual('courses', {
+    ref: 'Courses',
+    localField: '_id',
+    foreignField: 'bootcamp',
+    justOne: false,
 });
 exports.Bootcamp = (0, mongoose_1.model)('Bootcamps', exports.BootcampSchema);

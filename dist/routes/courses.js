@@ -7,5 +7,6 @@ const express_1 = __importDefault(require("express"));
 const courses_1 = require("../controllers/courses");
 //~~!!Allow url params to be merged!!~~
 const router = express_1.default.Router({ mergeParams: true });
-router.route('/').get(courses_1.getCourses);
+router.route('/').get(courses_1.getCourses).post(courses_1.createCourse);
+router.route('/:id').get(courses_1.getCourse);
 exports.default = router;

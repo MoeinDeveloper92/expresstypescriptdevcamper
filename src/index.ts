@@ -55,15 +55,16 @@ const runServer = () => {
   logging.info(`Start Server`);
   logging.info(`----------------------------------------------------`);
 
-  logging.info(`----------------------------------------------------`);
-  logging.info(`Router Not Found!`);
-  logging.info(`----------------------------------------------------`);
-  app.use(routeNotFound);
   // App Logger!
   app.use(loggingHandler);
   //Route mapping/ Mount Route
   app.use('/api/v1/bootcamps', bootcampRoute);
   app.use('/api/v1/courses', courseRoute);
+
+  logging.info(`----------------------------------------------------`);
+  logging.info(`Router Not Found!`);
+  logging.info(`----------------------------------------------------`);
+  app.use(routeNotFound);
 
   const server = app.listen(PORT as number, '0.0.0.0', async () => {
     logging.log(

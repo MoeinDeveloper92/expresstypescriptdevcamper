@@ -63,15 +63,15 @@ const runServer = () => {
     logging.info(`----------------------------------------------------`);
     logging.info(`Start Server`);
     logging.info(`----------------------------------------------------`);
-    logging.info(`----------------------------------------------------`);
-    logging.info(`Router Not Found!`);
-    logging.info(`----------------------------------------------------`);
-    app.use(routeNotFound_1.routeNotFound);
     // App Logger!
     app.use(logger_1.loggingHandler);
     //Route mapping/ Mount Route
     app.use('/api/v1/bootcamps', bootcamp_1.default);
     app.use('/api/v1/courses', courses_1.default);
+    logging.info(`----------------------------------------------------`);
+    logging.info(`Router Not Found!`);
+    logging.info(`----------------------------------------------------`);
+    app.use(routeNotFound_1.routeNotFound);
     const server = app.listen(PORT, '0.0.0.0', () => __awaiter(void 0, void 0, void 0, function* () {
         logging.log(`The server is running on mode:${process.env.NODE_ENV}, PORT:${process.env.PORT}`);
     }));
