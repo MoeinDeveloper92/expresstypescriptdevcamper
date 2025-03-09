@@ -14,11 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const morgan_1 = __importDefault(require("morgan"));
 require("colorts/lib/string");
 const db_1 = require("./config/db");
+require("./config/logging");
 const error_1 = require("./middleware/error");
 const bootcamp_1 = __importDefault(require("./routes/bootcamp"));
+const corsHandler_1 = require("./middleware/corsHandler");
 //Config env, and Load env vars
 dotenv_1.default.config({});
 const PORT = process.env.PORT || 8000;
@@ -28,10 +29,27 @@ const app = (0, express_1.default)();
 //Body Parse
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
+//Cors
+app.use(corsHandler_1.corsHandler);
 const runServer = () => {
     //Tiny Loggin Middleware
     if (process.env.NODE_ENV === 'development') {
-        app.use((0, morgan_1.default)('tiny'));
+        logging.info(`-----------------------------------------------------`);
+        logging.info('Initializing Application');
+        logging.info(`-----------------------------------------------------`);
+        logging.info('');
+        logging.info(`----------------------------------------------------`);
+        logging.info(`Logging & Configuration`);
+        logging.info(`----------------------------------------------------`);
+        logging.info(`----------------------------------------------------`);
+        logging.info(`Define Controller Routing`);
+        logging.info(`----------------------------------------------------`);
+        app.get('/', (req, res) => {
+            res.status(200).json({
+                success: true,
+                message: 'Welcome to DevCamp Backend API!',
+            });
+        });
     }
     app.get('/', (req, res) => {
         res.status(200).json({
@@ -39,6 +57,9 @@ const runServer = () => {
             message: 'Welcome to DevCamp Backend API!',
         });
     });
+    logging.info(`----------------------------------------------------`);
+    logging.info(`Start Server`);
+    logging.info(`----------------------------------------------------`);
     //Route mapping/ Mount Route
     app.use('/api/v1/bootcamps', bootcamp_1.default);
     const server = app.listen(PORT, '0.0.0.0', () => __awaiter(void 0, void 0, void 0, function* () {

@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logger = void 0;
-//This logger is responisble to log the req information
-//@desc     Logs request to console
-const logger = (req, res, next) => {
-    console.log(`${req.method}  ${req.protocol}://${req.get('host')}${req.originalUrl}`);
+exports.loggingHandler = loggingHandler;
+function loggingHandler(req, res, next) {
+    logging.log(`Incomming  - METHOD:[${req.method}] - URL: [${req.url}] - IP:[${req.socket.remoteAddress}]`);
+    res.on('finish', () => {
+        logging.log(`Incomming - METHOD:[${req.method}] - URL: [${req.url}] - IP:[${req.socket.remoteAddress}] - STATUS:${res.statusCode}`);
+    });
     next();
-};
-exports.logger = logger;
+}

@@ -127,7 +127,6 @@ exports.BootcampSchema.pre('save', function (next) {
 exports.BootcampSchema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         const loc = yield (0, geocoder_1.geocodedAddress)(this.address);
-        console.log(loc);
         this.location = {
             type: 'Point',
             coordinates: [loc.items[0].position.lng, loc.items[0].position.lat],

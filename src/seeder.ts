@@ -2,6 +2,7 @@ import fs from 'fs';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { Bootcamp } from './models/Bootcamp';
+import path = require('path');
 //Load env vars
 dotenv.config({});
 
@@ -10,14 +11,14 @@ mongoose.connect(process.env.MONGODB_URI as string);
 
 //Read JSON file
 const bootcamps = JSON.parse(
-  fs.readFileSync(`${__dirname}/_data/bootcamps.json`, 'utf-8')
+  fs.readFileSync(path.join(process.cwd(), '_data', 'bootcamps.json'), 'utf-8')
 );
 
 //Import into the DB
 const importData = async () => {
   try {
     await Bootcamp.create(bootcamps);
-    console.log(`Data imported....`.green.inverse);
+    console.log('Data Imported....');
     process.exit();
   } catch (error) {
     console.error('Something went wrong with data seeding!');
@@ -28,15 +29,15 @@ const importData = async () => {
 const deleteData = async () => {
   try {
     await Bootcamp.deleteMany();
-    console.log(`Data Deleted...`.red.inverse);
+    console.log(`Data Deleted...`);
     process.exit();
   } catch (error) {
     console.error('Something went wrong with data deletion');
   }
 };
 
-if (process.argv[3] === '-i') {
+if (process.argv[2] === '-i') {
   importData();
-} else if (process.argv[3] === '-d') {
+} else if (process.argv[2] === '-d') {
   deleteData();
 }

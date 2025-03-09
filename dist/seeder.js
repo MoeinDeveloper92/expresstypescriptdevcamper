@@ -16,17 +16,18 @@ const fs_1 = __importDefault(require("fs"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const Bootcamp_1 = require("./models/Bootcamp");
+const path = require("path");
 //Load env vars
 dotenv_1.default.config({});
 //Connect DB
 mongoose_1.default.connect(process.env.MONGODB_URI);
 //Read JSON file
-const bootcamps = JSON.parse(fs_1.default.readFileSync(`${__dirname}/_data/bootcamps.json`, 'utf-8'));
+const bootcamps = JSON.parse(fs_1.default.readFileSync(path.join(process.cwd(), '_data', 'bootcamps.json'), 'utf-8'));
 //Import into the DB
 const importData = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield Bootcamp_1.Bootcamp.create(bootcamps);
-        console.log(`Data imported....`.green.inverse);
+        console.log('Data Imported....');
         process.exit();
     }
     catch (error) {
@@ -37,16 +38,16 @@ const importData = () => __awaiter(void 0, void 0, void 0, function* () {
 const deleteData = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield Bootcamp_1.Bootcamp.deleteMany();
-        console.log(`Data Deleted...`.red.inverse);
+        console.log(`Data Deleted...`);
         process.exit();
     }
     catch (error) {
         console.error('Something went wrong with data deletion');
     }
 });
-if (process.argv[3] === '-i') {
+if (process.argv[2] === '-i') {
     importData();
 }
-else if (process.argv[3] === '-d') {
+else if (process.argv[2] === '-d') {
     deleteData();
 }

@@ -3,9 +3,10 @@ import dotenv from 'dotenv';
 import morgan from 'morgan';
 import 'colorts/lib/string';
 import { mongoClient } from './config/db';
-
+import './config/logging';
 import { errorHandler } from './middleware/error';
 import bootcampRoute from './routes/bootcamp';
+import { corsHandler } from './middleware/corsHandler';
 
 //Config env, and Load env vars
 dotenv.config({});
@@ -19,10 +20,27 @@ const app: Express = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+//Cors
+app.use(corsHandler);
 const runServer = () => {
   //Tiny Loggin Middleware
   if (process.env.NODE_ENV === 'development') {
-    app.use(morgan('tiny'));
+    logging.info(`-----------------------------------------------------`);
+    logging.info('Initializing Application');
+    logging.info(`-----------------------------------------------------`);
+    logging.info('');
+    logging.info(`----------------------------------------------------`);
+    logging.info(`Logging & Configuration`);
+    logging.info(`----------------------------------------------------`);
+    logging.info(`----------------------------------------------------`);
+    logging.info(`Define Controller Routing`);
+    logging.info(`----------------------------------------------------`);
+    app.get('/', (req, res) => {
+      res.status(200).json({
+        success: true,
+        message: 'Welcome to DevCamp Backend API!',
+      });
+    });
   }
   app.get('/', (req, res) => {
     res.status(200).json({
@@ -30,6 +48,9 @@ const runServer = () => {
       message: 'Welcome to DevCamp Backend API!',
     });
   });
+  logging.info(`----------------------------------------------------`);
+  logging.info(`Start Server`);
+  logging.info(`----------------------------------------------------`);
 
   //Route mapping/ Mount Route
   app.use('/api/v1/bootcamps', bootcampRoute);

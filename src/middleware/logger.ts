@@ -1,10 +1,19 @@
-import { NextFunction, Request, Response } from 'express';
-//This logger is responisble to log the req information
-//@desc     Logs request to console
-export const logger = (req: Request, res: Response, next: NextFunction) => {
-  console.log(
-    `${req.method}  ${req.protocol}://${req.get('host')}${req.originalUrl}`
+import { Request, Response, NextFunction } from 'express';
+
+export function loggingHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  logging.log(
+    `Incomming  - METHOD:[${req.method}] - URL: [${req.url}] - IP:[${req.socket.remoteAddress}]`
   );
 
+  res.on('finish', () => {
+    logging.log(
+      `Incomming - METHOD:[${req.method}] - URL: [${req.url}] - IP:[${req.socket.remoteAddress}] - STATUS:${res.statusCode}`
+    );
+  });
+
   next();
-};
+}

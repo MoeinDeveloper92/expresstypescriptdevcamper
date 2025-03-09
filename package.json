@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc --build",
     "start:dev": "nodemon dist/index.js",
-    "start:prod": "NODE_ENV=production nodemon dist/index.js"
+    "start:prod": "NODE_ENV=production nodemon dist/index.js",
+    "start:seeder:d": "ts-node ./src/seeder.ts -d",
+    "start:seeder:i": "ts-node ./src/seeder.ts -i"
   },
   "keywords": [],
   "author": "",
