@@ -52,6 +52,8 @@ const runServer = () => {
   logging.info(`----------------------------------------------------`);
   logging.info(`Start Server`);
   logging.info(`----------------------------------------------------`);
+
+  // App Logger!
   app.use(loggingHandler);
   //Route mapping/ Mount Route
   app.use('/api/v1/bootcamps', bootcampRoute);

@@ -17,10 +17,61 @@ const async_1 = require("../middleware/async");
 //@route    GET /api/v1/bootcamps
 //@access   public
 exports.getBootcamps = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const bootcamps = yield Bootcamp_1.Bootcamp.find();
+    let query;
+    //Copy req.query
+    const reqQuery = Object.assign({}, req.query);
+    //Fields to exclude that I do not want to be matched
+    const removeFields = ['select', 'sort', 'page', 'limit'];
+    //Loop over removeFileds and delete them from reqQuery
+    removeFields.forEach((item) => delete reqQuery[item]);
+    //Create query string
+    let queryStr = JSON.stringify(reqQuery);
+    //Create operators ($gt, $gte...)
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
+    //Finding Resource
+    query = Bootcamp_1.Bootcamp.find(JSON.parse(queryStr));
+    //SELECT FIELDS
+    if (req.query.select) {
+        let selectedField = req.query.select;
+        selectedField = selectedField.split(',').join(' ');
+        query = query.select(selectedField);
+    }
+    //SORT FIELDS
+    if (req.query.sort) {
+        let sortedField = req.query.sort;
+        sortedField = sortedField.split(',').join(' ');
+        query = query.sort(sortedField);
+    }
+    else {
+        query = query.sort('-createdAt');
+    }
+    //Pagination
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 100;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const total = yield Bootcamp_1.Bootcamp.countDocuments();
+    query = query.skip(startIndex).limit(limit);
+    //Execurting our query
+    const bootcamps = yield query;
+    //Pagination Result
+    const pagination = {};
+    if (endIndex < total) {
+        pagination.next = {
+            page: page + 1,
+            limit,
+        };
+    }
+    if (startIndex > 0) {
+        pagination.prev = {
+            page: page - 1,
+            limit,
+        };
+    }
     res.status(200).json({
         success: true,
         count: bootcamps.length,
+        pagination,
         data: bootcamps,
     });
 }));
