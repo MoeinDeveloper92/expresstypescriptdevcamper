@@ -19,8 +19,10 @@ const db_1 = require("./config/db");
 require("./config/logging");
 const error_1 = require("./middleware/error");
 const bootcamp_1 = __importDefault(require("./routes/bootcamp"));
+const courses_1 = __importDefault(require("./routes/courses"));
 const corsHandler_1 = require("./middleware/corsHandler");
 const logger_1 = require("./middleware/logger");
+const routeNotFound_1 = require("./middleware/routeNotFound");
 //Config env, and Load env vars
 dotenv_1.default.config({});
 const PORT = process.env.PORT || 8000;
@@ -61,10 +63,15 @@ const runServer = () => {
     logging.info(`----------------------------------------------------`);
     logging.info(`Start Server`);
     logging.info(`----------------------------------------------------`);
+    logging.info(`----------------------------------------------------`);
+    logging.info(`Router Not Found!`);
+    logging.info(`----------------------------------------------------`);
+    app.use(routeNotFound_1.routeNotFound);
     // App Logger!
     app.use(logger_1.loggingHandler);
     //Route mapping/ Mount Route
     app.use('/api/v1/bootcamps', bootcamp_1.default);
+    app.use('/api/v1/courses', courses_1.default);
     const server = app.listen(PORT, '0.0.0.0', () => __awaiter(void 0, void 0, void 0, function* () {
         logging.log(`The server is running on mode:${process.env.NODE_ENV}, PORT:${process.env.PORT}`);
     }));

@@ -6,8 +6,10 @@ import { mongoClient } from './config/db';
 import './config/logging';
 import { errorHandler } from './middleware/error';
 import bootcampRoute from './routes/bootcamp';
+import courseRoute from './routes/courses';
 import { corsHandler } from './middleware/corsHandler';
 import { loggingHandler } from './middleware/logger';
+import { routeNotFound } from './middleware/routeNotFound';
 
 //Config env, and Load env vars
 dotenv.config({});
@@ -53,10 +55,15 @@ const runServer = () => {
   logging.info(`Start Server`);
   logging.info(`----------------------------------------------------`);
 
+  logging.info(`----------------------------------------------------`);
+  logging.info(`Router Not Found!`);
+  logging.info(`----------------------------------------------------`);
+  app.use(routeNotFound);
   // App Logger!
   app.use(loggingHandler);
   //Route mapping/ Mount Route
   app.use('/api/v1/bootcamps', bootcampRoute);
+  app.use('/api/v1/courses', courseRoute);
 
   const server = app.listen(PORT as number, '0.0.0.0', async () => {
     logging.log(
