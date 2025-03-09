@@ -16,6 +16,7 @@ const fs_1 = __importDefault(require("fs"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const Bootcamp_1 = require("./models/Bootcamp");
+const Course_1 = require("./models/Course");
 const path = require("path");
 //Load env vars
 dotenv_1.default.config({});
@@ -23,10 +24,12 @@ dotenv_1.default.config({});
 mongoose_1.default.connect(process.env.MONGODB_URI);
 //Read JSON file
 const bootcamps = JSON.parse(fs_1.default.readFileSync(path.join(process.cwd(), '_data', 'bootcamps.json'), 'utf-8'));
+const courses = JSON.parse(fs_1.default.readFileSync(path.join(process.cwd(), '_data', 'courses.json'), 'utf-8'));
 //Import into the DB
 const importData = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield Bootcamp_1.Bootcamp.create(bootcamps);
+        yield Course_1.Course.create(courses);
         console.log('Data Imported....');
         process.exit();
     }
@@ -38,6 +41,7 @@ const importData = () => __awaiter(void 0, void 0, void 0, function* () {
 const deleteData = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield Bootcamp_1.Bootcamp.deleteMany();
+        yield Course_1.Course.deleteMany();
         console.log(`Data Deleted...`);
         process.exit();
     }
