@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createCourse = exports.getCourse = exports.getCourses = void 0;
+exports.deleteCourse = exports.updateCourse = exports.createCourse = exports.getCourse = exports.getCourses = void 0;
 const Course_1 = require("../models/Course");
 const async_1 = require("../middleware/async");
 const errorResponse_1 = require("../utils/errorResponse");
@@ -64,8 +64,44 @@ exports.createCourse = (0, async_1.asyncHandler)((req, res, next) => __awaiter(v
         return;
     }
     const course = yield Course_1.Course.create(Object.assign(Object.assign({}, req.body), { bootcamp: req.params.bootcampId }));
-    res.status(201).json({
+    res.status(200).json({
         success: true,
+        data: course,
+    });
+}));
+//@desc     Update Course
+//@route    POST /api/v1/courses/:id
+//@access   private
+exports.updateCourse = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let course = yield Course_1.Course.findById(req.params.id);
+    if (!course) {
+        next(new errorResponse_1.ErrorResponse(`Course ${req.params.id} not found`, 404));
+        return;
+    }
+    //update cpurse
+    course = yield Course_1.Course.findByIdAndUpdate(req.params.id, req.body, {
+        runValidators: true,
+        new: true,
+    });
+    res.status(200).json({
+        success: true,
+        data: course,
+    });
+}));
+//@desc     Delete Course
+//@route    POST /api/v1/courses/:id
+//@access   private
+exports.deleteCourse = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let course = yield Course_1.Course.findById(req.params.id);
+    if (!course) {
+        next(new errorResponse_1.ErrorResponse(`Course ${req.params.id} not found`, 404));
+        return;
+    }
+    //delete course
+    yield Course_1.Course.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+        success: true,
+        message: 'course deleted!',
         data: course,
     });
 }));

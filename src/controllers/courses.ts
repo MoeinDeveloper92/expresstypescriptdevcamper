@@ -72,9 +72,55 @@ export const createCourse = asyncHandler(
       bootcamp: req.params.bootcampId,
     });
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       data: course,
+    });
+  }
+);
+
+//@desc     Update Course
+//@route    POST /api/v1/courses/:id
+//@access   private
+export const updateCourse = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    let course = await Course.findById(req.params.id);
+    if (!course) {
+      next(new ErrorResponse(`Course ${req.params.id} not found`, 404));
+      return;
+    }
+
+    //update cpurse
+    course = await Course.findByIdAndUpdate(req.params.id, req.body, {
+      runValidators: true,
+      new: true,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: course,
+    });
+  }
+);
+
+//@desc     Delete Course
+//@route    POST /api/v1/courses/:id
+//@access   private
+export const deleteCourse = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    let course = await Course.findById(req.params.id);
+    if (!course) {
+      next(new ErrorResponse(`Course ${req.params.id} not found`, 404));
+      return;
+    }
+
+    //delete course
+    await Course.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      message: 'course deleted!',
+      data: null,
     });
   }
 );
