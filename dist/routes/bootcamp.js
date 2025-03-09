@@ -8,6 +8,7 @@ const bootcamps_1 = require("../controllers/bootcamps");
 const router = express_1.default.Router();
 //we bind each rout to corresponding controller
 router.route('/').get(bootcamps_1.getBootcamps).post(bootcamps_1.createBootcamp);
+router.route('/radius/:zipcode/:distance').get(bootcamps_1.getBootcampsInRadius);
 router
     .route('/:id')
     .get(bootcamps_1.getBootcamp)

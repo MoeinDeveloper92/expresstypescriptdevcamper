@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Bootcamp } from '../models/Bootcamp';
 import { ErrorResponse } from '../utils/errorResponse';
 import { asyncHandler } from '../middleware/async';
+
 //@desc     Get all the bootcamps
 //@route    GET /api/v1/bootcamps
 //@access   public
@@ -86,6 +87,33 @@ export const updateBootcamp = asyncHandler(
     res.status(200).json({
       success: true,
       data: bootcamp,
+    });
+  }
+);
+
+//@desc     Get bootcamps within a raidus
+//@route    GET /api/v1/bootcamps/radius/:zipcode/:distance
+//@access   Public
+export const getBootcampsInRadius = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { zipcode, distance } = req.params;
+
+    // Get lat/lng from the geocoder
+    const lat = 79.0123;
+    const lng = -56.1412;
+
+    //Call radius using radians
+    //Divide distance by radiuus of Earth
+    //Earth Raidus = 3,963 mi
+    const radius = Number(distance) / 3963;
+    const bootcamps = await Bootcamp.find({
+      location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+    });
+
+    res.status(200).json({
+      success: true,
+      count: bootcamps.length,
+      data: bootcamps,
     });
   }
 );

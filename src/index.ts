@@ -7,6 +7,7 @@ import './config/logging';
 import { errorHandler } from './middleware/error';
 import bootcampRoute from './routes/bootcamp';
 import { corsHandler } from './middleware/corsHandler';
+import { loggingHandler } from './middleware/logger';
 
 //Config env, and Load env vars
 dotenv.config({});
@@ -51,14 +52,13 @@ const runServer = () => {
   logging.info(`----------------------------------------------------`);
   logging.info(`Start Server`);
   logging.info(`----------------------------------------------------`);
-
+  app.use(loggingHandler);
   //Route mapping/ Mount Route
   app.use('/api/v1/bootcamps', bootcampRoute);
 
   const server = app.listen(PORT as number, '0.0.0.0', async () => {
-    console.log(
+    logging.log(
       `The server is running on mode:${process.env.NODE_ENV}, PORT:${process.env.PORT}`
-        .bgCyan.underline.bold
     );
   });
 

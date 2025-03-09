@@ -9,6 +9,7 @@ export function loggingHandler(
     `Incomming  - METHOD:[${req.method}] - URL: [${req.url}] - IP:[${req.socket.remoteAddress}]`
   );
 
+  //Listen for response finish to make sure the cycle is done!
   res.on('finish', () => {
     logging.log(
       `Incomming - METHOD:[${req.method}] - URL: [${req.url}] - IP:[${req.socket.remoteAddress}] - STATUS:${res.statusCode}`

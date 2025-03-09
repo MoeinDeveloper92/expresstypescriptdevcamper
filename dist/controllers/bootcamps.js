@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateBootcamp = exports.deleteBootcamp = exports.createBootcamp = exports.getBootcamp = exports.getBootcamps = void 0;
+exports.getBootcampsInRadius = exports.updateBootcamp = exports.deleteBootcamp = exports.createBootcamp = exports.getBootcamp = exports.getBootcamps = void 0;
 const Bootcamp_1 = require("../models/Bootcamp");
 const errorResponse_1 = require("../utils/errorResponse");
 const async_1 = require("../middleware/async");
@@ -78,5 +78,26 @@ exports.updateBootcamp = (0, async_1.asyncHandler)((req, res, next) => __awaiter
     res.status(200).json({
         success: true,
         data: bootcamp,
+    });
+}));
+//@desc     Get bootcamps within a raidus
+//@route    GET /api/v1/bootcamps/radius/:zipcode/:distance
+//@access   Public
+exports.getBootcampsInRadius = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { zipcode, distance } = req.params;
+    // Get lat/lng from the geocoder
+    const lat = 79.0123;
+    const lng = -56.1412;
+    //Call radius using radians
+    //Divide distance by radiuus of Earth
+    //Earth Raidus = 3,963 mi
+    const radius = Number(distance) / 3963;
+    const bootcamps = yield Bootcamp_1.Bootcamp.find({
+        location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+    });
+    res.status(200).json({
+        success: true,
+        count: bootcamps.length,
+        data: bootcamps,
     });
 }));

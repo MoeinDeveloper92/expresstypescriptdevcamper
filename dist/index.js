@@ -20,6 +20,7 @@ require("./config/logging");
 const error_1 = require("./middleware/error");
 const bootcamp_1 = __importDefault(require("./routes/bootcamp"));
 const corsHandler_1 = require("./middleware/corsHandler");
+const logger_1 = require("./middleware/logger");
 //Config env, and Load env vars
 dotenv_1.default.config({});
 const PORT = process.env.PORT || 8000;
@@ -60,11 +61,11 @@ const runServer = () => {
     logging.info(`----------------------------------------------------`);
     logging.info(`Start Server`);
     logging.info(`----------------------------------------------------`);
+    app.use(logger_1.loggingHandler);
     //Route mapping/ Mount Route
     app.use('/api/v1/bootcamps', bootcamp_1.default);
     const server = app.listen(PORT, '0.0.0.0', () => __awaiter(void 0, void 0, void 0, function* () {
-        console.log(`The server is running on mode:${process.env.NODE_ENV}, PORT:${process.env.PORT}`
-            .bgCyan.underline.bold);
+        logging.log(`The server is running on mode:${process.env.NODE_ENV}, PORT:${process.env.PORT}`);
     }));
     app.use(error_1.errorHandler);
     //Hanlde unhandled rejections / Promise Rejections
