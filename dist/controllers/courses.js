@@ -98,10 +98,10 @@ exports.deleteCourse = (0, async_1.asyncHandler)((req, res, next) => __awaiter(v
         return;
     }
     //delete course
-    yield Course_1.Course.findByIdAndDelete(req.params.id);
+    yield Course_1.Course.findOneAndDelete({ _id: req.params.id });
     res.status(200).json({
         success: true,
         message: 'course deleted!',
-        data: course,
+        data: null,
     });
 }));

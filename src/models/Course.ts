@@ -1,5 +1,7 @@
-import mongoose, { InferSchemaType } from 'mongoose';
+import mongoose, { InferSchemaType, Model, Query } from 'mongoose';
+import { Bootcamp } from './Bootcamp';
 
+// Define the Schema
 const CourseSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -39,8 +41,58 @@ const CourseSchema = new mongoose.Schema({
   },
 });
 
-export interface ICourse extends InferSchemaType<typeof CourseSchema> {}
+export interface ICourse
+  extends InferSchemaType<typeof CourseSchema>,
+    mongoose.Document {}
 
-const Course = mongoose.model('Courses', CourseSchema);
+interface ICourseModel extends Model<ICourse> {
+  getAverageCost(
+    bootcampId: any
+  ): Promise<{ _id: any; averageCost: number } | null>;
+}
+
+// Implement the Static Method
+CourseSchema.statics.getAverageCost = async function (bootcampId) {
+  const obj = await this.aggregate([
+    {
+      $match: { bootcamp: bootcampId },
+    },
+    {
+      $group: {
+        _id: '$bootcamp',
+        averageCost: { $avg: '$tuition' },
+      },
+    },
+  ]);
+
+  try {
+    await Bootcamp.findByIdAndUpdate(bootcampId, {
+      averageCost: Math.ceil(obj[0].averageCost / 10) * 10,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+CourseSchema.post('save', async function () {
+  const course = this;
+
+  if (course.bootcamp) {
+    try {
+      await Course.getAverageCost(course.bootcamp);
+    } catch (err) {
+      console.error('Error calculating average cost:', err);
+    }
+  }
+});
+
+CourseSchema.post('findOneAndDelete', async function (doc) {
+  if (doc) {
+    await doc.model('Courses').getAverageCost(doc.bootcamp);
+  }
+});
+
+// Create Model with the Interface
+const Course = mongoose.model<ICourse, ICourseModel>('Courses', CourseSchema);
 
 export { Course };

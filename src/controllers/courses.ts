@@ -3,6 +3,8 @@ import { asyncHandler } from '../middleware/async';
 import { ErrorResponse } from '../utils/errorResponse';
 import { Request, Response, NextFunction } from 'express';
 import { Bootcamp } from '../models/Bootcamp';
+import { ObjectId } from 'mongoose';
+
 //@desc     Get all courses
 //@route    GET /api/v1/courses
 //@route    GET /api/v1/bootcamps/:bootcampId/courses
@@ -115,7 +117,7 @@ export const deleteCourse = asyncHandler(
     }
 
     //delete course
-    await Course.findByIdAndDelete(req.params.id);
+    await Course.findOneAndDelete({ _id: req.params.id });
 
     res.status(200).json({
       success: true,
