@@ -162,3 +162,4 @@ exports.BootcampSchema.virtual('courses', {
     justOne: false,
 });
 exports.Bootcamp = (0, mongoose_1.model)('Bootcamps', exports.BootcampSchema);
+//# sourceMappingURL=Bootcamp.js.map

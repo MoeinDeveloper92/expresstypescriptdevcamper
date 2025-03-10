@@ -12,3 +12,4 @@ function corsHandler(req, res, next) {
     }
     next();
 }
+//# sourceMappingURL=corsHandler.js.map

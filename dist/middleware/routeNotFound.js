@@ -8,3 +8,4 @@ function routeNotFound(req, res, next) {
     next(error);
     return;
 }
+//# sourceMappingURL=routeNotFound.js.map

@@ -30,3 +30,4 @@ class MongoDBClient {
 const mongoClient = new MongoDBClient();
 exports.mongoClient = mongoClient;
 Object.freeze(mongoClient);
+//# sourceMappingURL=db.js.map

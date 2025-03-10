@@ -1,0 +1,1 @@
+{"version":3,"file":"errorResponse.js","sourceRoot":"","sources":["../../src/errors/errorResponse.ts"],"names":[],"mappings":";;;AAKA,MAAsB,WAAY,SAAQ,KAAK;IAI7C,YAAY,OAAe;QACzB,KAAK,CAAC,OAAO,CAAC,CAAC;QACf,gDAAgD;QAChD,MAAM,CAAC,cAAc,CAAC,IAAI,EAAE,WAAW,CAAC,SAAS,CAAC,CAAC;IACrD,CAAC;CACF;AATD,kCASC"}

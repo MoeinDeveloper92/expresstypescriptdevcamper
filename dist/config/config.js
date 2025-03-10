@@ -16,3 +16,4 @@ exports.SERVER = {
     SERVER_HOSTNAME: exports.SERVER_HOSTNAME,
     SERVER_PORT: exports.SERVER_PORT,
 };
+//# sourceMappingURL=config.js.map

@@ -23,3 +23,4 @@ class BadRequestError extends errorResponse_1.CustomError {
 }
 BadRequestError._statusCode = 400;
 exports.default = BadRequestError;
+//# sourceMappingURL=badRequest.js.map

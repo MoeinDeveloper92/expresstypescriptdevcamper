@@ -1,7 +1,6 @@
-import { Schema, model, InferSchemaType } from 'mongoose';
+import { Schema, model, InferSchemaType, Document } from 'mongoose';
 import slugify from 'slugify';
 import { geocodedAddress } from '../utils/geocoder';
-import { ICourse } from './Course';
 
 export const BootcampSchema = new Schema(
   {
@@ -152,6 +151,8 @@ BootcampSchema.virtual('courses', {
   justOne: false,
 });
 
-export interface IBootcamp extends InferSchemaType<typeof BootcampSchema> {}
+export interface IBootcamp
+  extends InferSchemaType<typeof BootcampSchema>,
+    Document {}
 
 export const Bootcamp = model<IBootcamp>('Bootcamps', BootcampSchema);

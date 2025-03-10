@@ -27,3 +27,4 @@ exports.geocodedAddress = geocodedAddress;
 //   httpAdapter: process.env.GEOCODER_API_KEY,
 //   formatter: null,
 // };
+//# sourceMappingURL=geocoder.js.map

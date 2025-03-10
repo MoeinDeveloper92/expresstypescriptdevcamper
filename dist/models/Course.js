@@ -101,3 +101,4 @@ CourseSchema.post('findOneAndDelete', function (doc) {
 // Create Model with the Interface
 const Course = mongoose_1.default.model('Courses', CourseSchema);
 exports.Course = Course;
+//# sourceMappingURL=Course.js.map

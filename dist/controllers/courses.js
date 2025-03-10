@@ -21,20 +21,17 @@ const Bootcamp_1 = require("../models/Bootcamp");
 exports.getCourses = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let query;
     if (req.params.bootcampId) {
-        query = Course_1.Course.find({ bootcamp: req.params.bootcampId });
+        const courses = yield Course_1.Course.find({ bootcamp: req.params.bootcampId });
+        res.status(200).json({
+            success: true,
+            count: courses.length,
+            data: courses,
+        });
+        return;
     }
     else {
-        query = Course_1.Course.find().populate({
-            path: 'bootcamp',
-            select: 'name description -_id',
-        });
+        res.status(200).json(res.advancedResults);
     }
-    const courses = yield query;
-    res.status(200).json({
-        success: true,
-        count: courses.length,
-        data: courses,
-    });
 }));
 //@desc     Get single course
 //@route    GET /api/v1/courses/:id
@@ -105,3 +102,4 @@ exports.deleteCourse = (0, async_1.asyncHandler)((req, res, next) => __awaiter(v
         data: null,
     });
 }));
+//# sourceMappingURL=courses.js.map

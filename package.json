@@ -4,7 +4,7 @@
   "description": "Creating DevCamp API with Express/TS",
   "main": "/dist/index.js",
   "scripts": {
-    "build": "tsc --build && xcopy /E /I src\\public dist\\public",
+    "build": "tsc --build && cp -r src/public dist/public",
     "start:dev": "nodemon dist/index.js",
     "start:prod": "NODE_ENV=production nodemon dist/index.js",
     "start:seeder:d": "ts-node ./src/seeder.ts -d",
