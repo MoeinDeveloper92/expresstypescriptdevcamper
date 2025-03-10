@@ -25,6 +25,7 @@ const corsHandler_1 = require("./middleware/corsHandler");
 const logger_1 = require("./middleware/logger");
 const routeNotFound_1 = require("./middleware/routeNotFound");
 const express_fileupload_1 = __importDefault(require("express-fileupload"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const path_1 = __importDefault(require("path"));
 //Config env, and Load env vars
 dotenv_1.default.config({});
@@ -37,6 +38,8 @@ app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
 //Body Parse
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
+//Cookie parser
+app.use((0, cookie_parser_1.default)());
 //Cors
 app.use(corsHandler_1.corsHandler);
 const runServer = () => {

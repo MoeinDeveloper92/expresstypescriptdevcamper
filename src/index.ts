@@ -12,6 +12,7 @@ import { corsHandler } from './middleware/corsHandler';
 import { loggingHandler } from './middleware/logger';
 import { routeNotFound } from './middleware/routeNotFound';
 import fileupload from 'express-fileupload';
+import cookieParser from 'cookie-parser';
 import path from 'path';
 //Config env, and Load env vars
 dotenv.config({});
@@ -27,6 +28,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 //Body Parse
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+//Cookie parser
+app.use(cookieParser());
 
 //Cors
 app.use(corsHandler);

@@ -13,6 +13,7 @@ exports.login = exports.register = void 0;
 const errorResponse_1 = require("../utils/errorResponse");
 const async_1 = require("../middleware/async");
 const User_1 = require("../models/User");
+const generateCookieResponse_1 = require("../utils/generateCookieResponse");
 //@desc     Register a user
 //@route    POST /api/v1/auth/register
 //@access   Public
@@ -25,12 +26,7 @@ exports.register = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 
         password,
         role,
     });
-    //create token
-    const token = user.getSignedJwtToken();
-    res.status(201).json({
-        success: true,
-        token,
-    });
+    (0, generateCookieResponse_1.sendTokenResponse)(user, 201, res);
 }));
 //@desc     Login a user
 //@route    POST /api/v1/auth/login
@@ -44,7 +40,6 @@ exports.login = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, 
     }
     //Check for user
     const user = yield User_1.User.findOne({ email }).select('+password');
-    console.log(user);
     if (!user) {
         next(new errorResponse_1.ErrorResponse('Invalid Credentials!', 401));
         return;
@@ -55,11 +50,7 @@ exports.login = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, 
         next(new errorResponse_1.ErrorResponse('Invalid Credentials', 401));
         return;
     }
-    //create token
-    const token = user.getSignedJwtToken();
-    res.status(201).json({
-        success: true,
-        token,
-    });
+    (0, generateCookieResponse_1.sendTokenResponse)(user, 200, res);
 }));
+//Get token
 //# sourceMappingURL=auth.js.map

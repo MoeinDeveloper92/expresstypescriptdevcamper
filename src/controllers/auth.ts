@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { ErrorResponse } from '../utils/errorResponse';
 import { asyncHandler } from '../middleware/async';
 import { User } from '../models/User';
+import { sendTokenResponse } from '../utils/generateCookieResponse';
 
 //@desc     Register a user
 //@route    POST /api/v1/auth/register
@@ -18,12 +19,7 @@ export const register = asyncHandler(
       role,
     });
 
-    //create token
-    const token = user.getSignedJwtToken();
-    res.status(201).json({
-      success: true,
-      token,
-    });
+    sendTokenResponse(user, 201, res);
   }
 );
 
@@ -52,11 +48,8 @@ export const login = asyncHandler(
       return;
     }
 
-    //create token
-    const token = user.getSignedJwtToken();
-    res.status(201).json({
-      success: true,
-      token,
-    });
+    sendTokenResponse(user, 200, res);
   }
 );
+
+//Get token
