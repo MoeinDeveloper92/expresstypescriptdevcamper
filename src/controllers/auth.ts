@@ -52,4 +52,17 @@ export const login = asyncHandler(
   }
 );
 
-//Get token
+//@desc   Get me
+//@route  GET /api/v1/auth/me
+//@access Protected
+export const getMe = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.headers['userId'];
+    const user = await User.findById(userId);
+
+    res.status(200).json({
+      succecss: true,
+      data: user,
+    });
+  }
+);

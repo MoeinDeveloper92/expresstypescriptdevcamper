@@ -8,6 +8,7 @@ import {
 } from '../controllers/courses';
 import { Course, ICourse } from '../models/Course';
 import { advancedResults } from '../middleware/advancedResults';
+import { protect } from '../middleware/guard';
 
 //~~!!Allow url params to be merged!!~~
 const router = express.Router({ mergeParams: true });
@@ -21,7 +22,11 @@ router
     }),
     getCourses
   )
-  .post(createCourse);
-router.route('/:id').get(getCourse).put(updateCourse).delete(deleteCourse);
+  .post(protect, createCourse);
+router
+  .route('/:id')
+  .get(getCourse)
+  .put(protect, updateCourse)
+  .delete(protect, deleteCourse);
 
 export default router;

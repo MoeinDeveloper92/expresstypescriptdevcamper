@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const courses_1 = require("../controllers/courses");
 const Course_1 = require("../models/Course");
 const advancedResults_1 = require("../middleware/advancedResults");
+const guard_1 = require("../middleware/guard");
 //~~!!Allow url params to be merged!!~~
 const router = express_1.default.Router({ mergeParams: true });
 router
@@ -15,7 +16,11 @@ router
     path: 'bootcamp',
     select: 'name description',
 }), courses_1.getCourses)
-    .post(courses_1.createCourse);
-router.route('/:id').get(courses_1.getCourse).put(courses_1.updateCourse).delete(courses_1.deleteCourse);
+    .post(guard_1.protect, courses_1.createCourse);
+router
+    .route('/:id')
+    .get(courses_1.getCourse)
+    .put(guard_1.protect, courses_1.updateCourse)
+    .delete(guard_1.protect, courses_1.deleteCourse);
 exports.default = router;
 //# sourceMappingURL=courses.js.map

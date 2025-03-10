@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.register = void 0;
+exports.getMe = exports.login = exports.register = void 0;
 const errorResponse_1 = require("../utils/errorResponse");
 const async_1 = require("../middleware/async");
 const User_1 = require("../models/User");
@@ -52,5 +52,15 @@ exports.login = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, 
     }
     (0, generateCookieResponse_1.sendTokenResponse)(user, 200, res);
 }));
-//Get token
+//@desc   Get me
+//@route  GET /api/v1/auth/me
+//@access Protected
+exports.getMe = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.headers['userId'];
+    const user = yield User_1.User.findById(userId);
+    res.status(200).json({
+        succecss: true,
+        data: user,
+    });
+}));
 //# sourceMappingURL=auth.js.map

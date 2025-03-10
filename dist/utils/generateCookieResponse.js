@@ -10,6 +10,9 @@ const sendTokenResponse = (user, statusCode, res) => {
         //we only want cookie to be acced though client side
         httpOnly: true,
     };
+    if (process.env.NODE_ENV === 'production') {
+        options.secure = true;
+    }
     res.status(statusCode).cookie('token', token, options).json({
         success: true,
         token,
