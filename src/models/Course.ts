@@ -1,4 +1,4 @@
-import mongoose, { InferSchemaType, Model, Query } from 'mongoose';
+import mongoose, { InferSchemaType, Model } from 'mongoose';
 import { Bootcamp } from './Bootcamp';
 
 // Define the Schema

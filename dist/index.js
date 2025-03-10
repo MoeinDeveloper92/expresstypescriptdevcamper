@@ -20,6 +20,7 @@ require("./config/logging");
 const error_1 = require("./middleware/error");
 const bootcamp_1 = __importDefault(require("./routes/bootcamp"));
 const courses_1 = __importDefault(require("./routes/courses"));
+const auth_1 = __importDefault(require("./routes/auth"));
 const corsHandler_1 = require("./middleware/corsHandler");
 const logger_1 = require("./middleware/logger");
 const routeNotFound_1 = require("./middleware/routeNotFound");
@@ -76,6 +77,7 @@ const runServer = () => {
     //Route mapping/ Mount Route
     app.use('/api/v1/bootcamps', bootcamp_1.default);
     app.use('/api/v1/courses', courses_1.default);
+    app.use('/api/v1/auth', auth_1.default);
     logging.info(`----------------------------------------------------`);
     logging.info(`Router Not Found!`);
     logging.info(`----------------------------------------------------`);

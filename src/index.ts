@@ -7,6 +7,7 @@ import './config/logging';
 import { errorHandler } from './middleware/error';
 import bootcampRoute from './routes/bootcamp';
 import courseRoute from './routes/courses';
+import authRoute from './routes/auth';
 import { corsHandler } from './middleware/corsHandler';
 import { loggingHandler } from './middleware/logger';
 import { routeNotFound } from './middleware/routeNotFound';
@@ -69,6 +70,7 @@ const runServer = () => {
   //Route mapping/ Mount Route
   app.use('/api/v1/bootcamps', bootcampRoute);
   app.use('/api/v1/courses', courseRoute);
+  app.use('/api/v1/auth', authRoute);
 
   logging.info(`----------------------------------------------------`);
   logging.info(`Router Not Found!`);
