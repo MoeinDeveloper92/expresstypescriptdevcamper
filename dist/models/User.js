@@ -106,6 +106,13 @@ UserSchema.methods.getSignedJwtToken = function () {
         expiresIn: '10d',
     });
 };
+//Match user netered passwor to hashed password in database
+UserSchema.methods.matchPassword = function (enteredPassword) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const isMatch = yield bcryptjs_1.default.compare(enteredPassword, this.password);
+        return isMatch;
+    });
+};
 const User = mongoose_1.default.model('Users', UserSchema);
 exports.User = User;
 //# sourceMappingURL=User.js.map

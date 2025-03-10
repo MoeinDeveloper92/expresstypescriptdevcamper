@@ -9,7 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.register = void 0;
+exports.login = exports.register = void 0;
+const errorResponse_1 = require("../utils/errorResponse");
 const async_1 = require("../middleware/async");
 const User_1 = require("../models/User");
 //@desc     Register a user
@@ -24,6 +25,36 @@ exports.register = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 
         password,
         role,
     });
+    //create token
+    const token = user.getSignedJwtToken();
+    res.status(201).json({
+        success: true,
+        token,
+    });
+}));
+//@desc     Login a user
+//@route    POST /api/v1/auth/login
+//@access   Public
+exports.login = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, password } = req.body;
+    //Validate email & password
+    if (!email || !password) {
+        next(new errorResponse_1.ErrorResponse(`Please provide an email and password`, 400));
+        return;
+    }
+    //Check for user
+    const user = yield User_1.User.findOne({ email }).select('+password');
+    console.log(user);
+    if (!user) {
+        next(new errorResponse_1.ErrorResponse('Invalid Credentials!', 401));
+        return;
+    }
+    //check if passwor dmatches
+    const isMatch = yield user.matchPassword(password);
+    if (!isMatch) {
+        next(new errorResponse_1.ErrorResponse('Invalid Credentials', 401));
+        return;
+    }
     //create token
     const token = user.getSignedJwtToken();
     res.status(201).json({

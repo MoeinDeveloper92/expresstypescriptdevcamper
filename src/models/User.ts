@@ -61,9 +61,18 @@ UserSchema.methods.getSignedJwtToken = function () {
   });
 };
 
+//Match user netered passwor to hashed password in database
+UserSchema.methods.matchPassword = async function (
+  enteredPassword: string
+): Promise<boolean> {
+  const isMatch = await bcrypt.compare(enteredPassword, this.password);
+  return isMatch;
+};
+
 export interface IUser extends InferSchemaType<typeof UserSchema>, Document {
   hashPassword: (password: string) => void;
   getSignedJwtToken: () => string;
+  matchPassword: (enteredPassword: string) => Promise<boolean>;
 }
 
 const User = mongoose.model<IUser>('Users', UserSchema);
