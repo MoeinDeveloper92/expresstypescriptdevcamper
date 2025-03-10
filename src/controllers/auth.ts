@@ -18,8 +18,11 @@ export const register = asyncHandler(
       role,
     });
 
+    //create token
+    const token = user.getSignedJwtToken();
     res.status(201).json({
       success: true,
+      token,
     });
   }
 );

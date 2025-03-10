@@ -24,8 +24,11 @@ exports.register = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 
         password,
         role,
     });
+    //create token
+    const token = user.getSignedJwtToken();
     res.status(201).json({
         success: true,
+        token,
     });
 }));
 //# sourceMappingURL=auth.js.map

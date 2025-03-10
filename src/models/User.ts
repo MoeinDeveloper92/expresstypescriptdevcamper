@@ -1,5 +1,6 @@
 import mongoose, { InferSchemaType, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import jwt, { PrivateKey, Secret } from 'jsonwebtoken';
 
 const UserSchema = new Schema({
   name: {
@@ -45,8 +46,24 @@ UserSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
+
+//Sign JWT and return
+UserSchema.methods.getSignedJwtToken = function () {
+  const secretKey = process.env.JWT_SECRET;
+  // const expiresIn: string = process.env.JWT_EXPIRE || '10d';
+
+  if (!secretKey) {
+    throw new Error('JWT Secret is not defieend!');
+  }
+
+  return jwt.sign({ _id: this._id?.toString() }, secretKey, {
+    expiresIn: '10d',
+  });
+};
+
 export interface IUser extends InferSchemaType<typeof UserSchema>, Document {
   hashPassword: (password: string) => void;
+  getSignedJwtToken: () => string;
 }
 
 const User = mongoose.model<IUser>('Users', UserSchema);

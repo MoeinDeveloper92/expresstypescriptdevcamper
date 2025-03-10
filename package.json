@@ -16,6 +16,7 @@
   "dependencies": {
     "@types/chalk": "^2.2.4",
     "@types/express-fileupload": "^1.5.1",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/mongoose": "^5.11.97",
     "@types/morgan": "^1.9.9",
     "bcryptjs": "^3.0.2",

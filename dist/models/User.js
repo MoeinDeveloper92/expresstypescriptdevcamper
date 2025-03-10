@@ -48,6 +48,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const UserSchema = new mongoose_1.Schema({
     name: {
         type: String,
@@ -93,6 +94,18 @@ UserSchema.pre('save', function (next) {
         next();
     });
 });
+//Sign JWT and return
+UserSchema.methods.getSignedJwtToken = function () {
+    var _a;
+    const secretKey = process.env.JWT_SECRET;
+    // const expiresIn: string = process.env.JWT_EXPIRE || '10d';
+    if (!secretKey) {
+        throw new Error('JWT Secret is not defieend!');
+    }
+    return jsonwebtoken_1.default.sign({ _id: (_a = this._id) === null || _a === void 0 ? void 0 : _a.toString() }, secretKey, {
+        expiresIn: '10d',
+    });
+};
 const User = mongoose_1.default.model('Users', UserSchema);
 exports.User = User;
 //# sourceMappingURL=User.js.map
