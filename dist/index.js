@@ -23,12 +23,16 @@ const courses_1 = __importDefault(require("./routes/courses"));
 const corsHandler_1 = require("./middleware/corsHandler");
 const logger_1 = require("./middleware/logger");
 const routeNotFound_1 = require("./middleware/routeNotFound");
+const express_fileupload_1 = __importDefault(require("express-fileupload"));
+const path_1 = __importDefault(require("path"));
 //Config env, and Load env vars
 dotenv_1.default.config({});
 const PORT = process.env.PORT || 8000;
 //ConnectDB
 db_1.mongoClient.connectDB();
 const app = (0, express_1.default)();
+//Set static folder
+app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
 //Body Parse
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
@@ -60,6 +64,10 @@ const runServer = () => {
             message: 'Welcome to DevCamp Backend API!',
         });
     });
+    logging.info(`----------------------------------------------------`);
+    logging.info(`File Uplaod Middleware`);
+    app.use((0, express_fileupload_1.default)());
+    logging.info(`----------------------------------------------------`);
     logging.info(`----------------------------------------------------`);
     logging.info(`Start Server`);
     logging.info(`----------------------------------------------------`);

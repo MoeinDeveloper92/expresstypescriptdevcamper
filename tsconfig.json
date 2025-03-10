@@ -111,6 +111,6 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
 
-  "include": ["src/**/*.ts", "src/seeder.ts"],
+  "include": ["src/**/*.ts", "src/seeder.ts", "src/public"],
   "exclude": ["node_modules/"]
 }

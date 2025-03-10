@@ -9,6 +9,8 @@ const courses_1 = __importDefault(require("./courses"));
 const router = express_1.default.Router();
 //re-route to the course router
 router.use('/:bootcampId/courses', courses_1.default);
+//Uplaod image route
+router.route("/:id/photo").put(bootcamps_1.bootcampPhotoUpload);
 //we bind each rout to corresponding controller
 router.route('/').get(bootcamps_1.getBootcamps).post(bootcamps_1.createBootcamp);
 router.route('/radius/:zipcode/:distance').get(bootcamps_1.getBootcampsInRadius);

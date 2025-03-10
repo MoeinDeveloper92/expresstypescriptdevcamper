@@ -10,7 +10,8 @@ import courseRoute from './routes/courses';
 import { corsHandler } from './middleware/corsHandler';
 import { loggingHandler } from './middleware/logger';
 import { routeNotFound } from './middleware/routeNotFound';
-
+import fileupload from 'express-fileupload';
+import path from 'path';
 //Config env, and Load env vars
 dotenv.config({});
 const PORT = process.env.PORT || 8000;
@@ -18,6 +19,9 @@ const PORT = process.env.PORT || 8000;
 //ConnectDB
 mongoClient.connectDB();
 const app: Express = express();
+
+//Set static folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 //Body Parse
 app.use(express.json());
@@ -51,6 +55,11 @@ const runServer = () => {
       message: 'Welcome to DevCamp Backend API!',
     });
   });
+  logging.info(`----------------------------------------------------`);
+  logging.info(`File Uplaod Middleware`);
+  app.use(fileupload());
+  logging.info(`----------------------------------------------------`);
+
   logging.info(`----------------------------------------------------`);
   logging.info(`Start Server`);
   logging.info(`----------------------------------------------------`);

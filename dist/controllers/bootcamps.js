@@ -8,11 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getBootcampsInRadius = exports.updateBootcamp = exports.deleteBootcamp = exports.createBootcamp = exports.getBootcamp = exports.getBootcamps = void 0;
+exports.bootcampPhotoUpload = exports.getBootcampsInRadius = exports.updateBootcamp = exports.deleteBootcamp = exports.createBootcamp = exports.getBootcamp = exports.getBootcamps = void 0;
 const Bootcamp_1 = require("../models/Bootcamp");
 const errorResponse_1 = require("../utils/errorResponse");
 const async_1 = require("../middleware/async");
+const path_1 = __importDefault(require("path"));
 //@desc     Get all the bootcamps
 //@route    GET /api/v1/bootcamps
 //@access   public
@@ -150,5 +154,45 @@ exports.getBootcampsInRadius = (0, async_1.asyncHandler)((req, res, next) => __a
         success: true,
         count: bootcamps.length,
         data: bootcamps,
+    });
+}));
+//@desc     upload a photo for bootcamp
+//@route    PUT /api/v1/bootcamps/:id/photo
+//@access   private
+exports.bootcampPhotoUpload = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const bootcamp = yield Bootcamp_1.Bootcamp.findById(req.params.id);
+    if (!bootcamp) {
+        next(new errorResponse_1.ErrorResponse(`Bootcamp with Id ${req.params.id} not found!`, 404));
+        return;
+    }
+    if (!req.files) {
+        next(new errorResponse_1.ErrorResponse(`Please upload a file`, 400));
+        return;
+    }
+    const file = req.files.file;
+    //Make sure that the image is a photo
+    if (!file.mimetype.startsWith('image')) {
+        next(new errorResponse_1.ErrorResponse(`Please upload an image file`, 400));
+        return;
+    }
+    //check the file size
+    //in NGINX we should have limit for size of image
+    if (file.size > Number(process.env.MAX_FILE_UPLOAD)) {
+        next(new errorResponse_1.ErrorResponse(`Please upload an image less than ${process.env.MAX_FILE_UPLOAD}`, 400));
+        return;
+    }
+    //Create custom file name
+    file.name = `photo-${bootcamp._id}${path_1.default.parse(file.name).ext}`;
+    file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, (err) => __awaiter(void 0, void 0, void 0, function* () {
+        if (err) {
+            console.error(err);
+            next(new errorResponse_1.ErrorResponse(`Problem with file upload`, 400));
+            return;
+        }
+        yield Bootcamp_1.Bootcamp.findByIdAndUpdate(req.params.id, { photo: file.name });
+    }));
+    res.status(200).json({
+        success: true,
+        data: file.name,
     });
 }));

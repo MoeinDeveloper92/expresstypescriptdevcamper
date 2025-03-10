@@ -91,15 +91,8 @@ CourseSchema.post('save', function () {
         }
     });
 });
-// BootcampSchema.post('findOneAndDelete', async function (doc) {
-//   if (doc) {
-//     console.log(`Deleting courses for bootcamp: ${doc._id}`);
-//     await doc.model('Courses').deleteMany({ bootcamp: doc._id });
-//   }
-// });
 CourseSchema.post('findOneAndDelete', function (doc) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log('Deleted DOC=>>>', doc);
         if (doc) {
             yield doc.model('Courses').getAverageCost(doc.bootcamp);
         }

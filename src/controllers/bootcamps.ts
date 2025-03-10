@@ -2,7 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { Bootcamp } from '../models/Bootcamp';
 import { ErrorResponse } from '../utils/errorResponse';
 import { asyncHandler } from '../middleware/async';
-
+import { UploadedFile } from 'express-fileupload';
+import path from 'path';
 //@desc     Get all the bootcamps
 //@route    GET /api/v1/bootcamps
 //@access   public
@@ -181,6 +182,61 @@ export const getBootcampsInRadius = asyncHandler(
       success: true,
       count: bootcamps.length,
       data: bootcamps,
+    });
+  }
+);
+
+//@desc     upload a photo for bootcamp
+//@route    PUT /api/v1/bootcamps/:id/photo
+//@access   private
+export const bootcampPhotoUpload = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const bootcamp = await Bootcamp.findById(req.params.id);
+    if (!bootcamp) {
+      next(
+        new ErrorResponse(`Bootcamp with Id ${req.params.id} not found!`, 404)
+      );
+      return;
+    }
+    if (!req.files) {
+      next(new ErrorResponse(`Please upload a file`, 400));
+      return;
+    }
+
+    const file = req.files.file as UploadedFile;
+
+    //Make sure that the image is a photo
+    if (!file.mimetype.startsWith('image')) {
+      next(new ErrorResponse(`Please upload an image file`, 400));
+      return;
+    }
+    //check the file size
+    //in NGINX we should have limit for size of image
+    if (file.size > Number(process.env.MAX_FILE_UPLOAD)) {
+      next(
+        new ErrorResponse(
+          `Please upload an image less than ${process.env.MAX_FILE_UPLOAD}`,
+          400
+        )
+      );
+      return;
+    }
+
+    //Create custom file name
+    file.name = `photo-${bootcamp._id}${path.parse(file.name).ext}`;
+
+    file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
+      if (err) {
+        console.error(err);
+        next(new ErrorResponse(`Problem with file upload`, 400));
+        return;
+      }
+      await Bootcamp.findByIdAndUpdate(req.params.id, { photo: file.name });
+    });
+
+    res.status(200).json({
+      success: true,
+      data: file.name,
     });
   }
 );

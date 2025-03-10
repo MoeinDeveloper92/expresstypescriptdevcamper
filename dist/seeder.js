@@ -29,7 +29,7 @@ const courses = JSON.parse(fs_1.default.readFileSync(path.join(process.cwd(), '_
 const importData = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield Bootcamp_1.Bootcamp.create(bootcamps);
-        // await Course.create(courses);
+        yield Course_1.Course.create(courses);
         console.log('Data Imported....');
         process.exit();
     }
