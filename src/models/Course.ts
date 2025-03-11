@@ -39,6 +39,11 @@ const CourseSchema = new mongoose.Schema({
     required: true,
     ref: 'Bootcamps',
   },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Users',
+  },
 });
 
 export interface ICourse

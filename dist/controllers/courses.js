@@ -14,6 +14,7 @@ const Course_1 = require("../models/Course");
 const async_1 = require("../middleware/async");
 const errorResponse_1 = require("../utils/errorResponse");
 const Bootcamp_1 = require("../models/Bootcamp");
+const User_1 = require("../models/User");
 //@desc     Get all courses
 //@route    GET /api/v1/courses
 //@route    GET /api/v1/bootcamps/:bootcampId/courses
@@ -60,7 +61,13 @@ exports.createCourse = (0, async_1.asyncHandler)((req, res, next) => __awaiter(v
         next(new errorResponse_1.ErrorResponse(`Bootcamp with Id ${req.params.bootcampId} not found!`, 404));
         return;
     }
-    const course = yield Course_1.Course.create(Object.assign(Object.assign({}, req.body), { bootcamp: req.params.bootcampId }));
+    const user = yield User_1.User.findById(req.headers.userId);
+    //Make sure the user is bootcamp owner
+    if (bootcamp.user.toString() !== req.headers.userId &&
+        (user === null || user === void 0 ? void 0 : user.role) !== 'admin') {
+        next(new errorResponse_1.ErrorResponse(`User ${req.headers.userId} is not authorized to add a course to bootcamp ${req.params.bootcampId}`, 401));
+    }
+    const course = yield Course_1.Course.create(Object.assign(Object.assign({}, req.body), { bootcamp: req.params.bootcampId, user: req.headers.userId }));
     res.status(200).json({
         success: true,
         data: course,

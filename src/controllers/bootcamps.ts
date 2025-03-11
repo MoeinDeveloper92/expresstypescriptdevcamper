@@ -179,6 +179,20 @@ export const bootcampPhotoUpload = asyncHandler(
       );
       return;
     }
+
+    const user = await User.findById(req.headers.userId);
+    //Make sure user is the bootcamop owner
+    if (
+      bootcamp.user.toString()! == user?.id.toString() &&
+      user?.role !== 'admin'
+    ) {
+      next(
+        new ErrorResponse(
+          `User ${user.id} is no authorized to upload photo`,
+          401
+        )
+      );
+    }
     if (!req.files) {
       next(new ErrorResponse(`Please upload a file`, 400));
       return;

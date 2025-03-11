@@ -67,6 +67,13 @@ exports.deleteBootcamp = (0, async_1.asyncHandler)((req, res, next) => __awaiter
         next(new errorResponse_1.ErrorResponse(`Bootcamp with Id ${req.params.id} not found!`, 404));
         return;
     }
+    const user = yield User_1.User.findById(req.headers.userId);
+    //Make sure user is the owner of bootcamop
+    if (bootcamp.user.toString() !== req.headers.userId &&
+        (user === null || user === void 0 ? void 0 : user.role) !== 'admin') {
+        next(new errorResponse_1.ErrorResponse(`User ${req.headers.userId} is not authorized to delete this bootcamp!`, 401));
+        return;
+    }
     yield Bootcamp_1.Bootcamp.findByIdAndDelete(req.params.id);
     res.status(200).json({
         success: true,
@@ -128,6 +135,12 @@ exports.bootcampPhotoUpload = (0, async_1.asyncHandler)((req, res, next) => __aw
     if (!bootcamp) {
         next(new errorResponse_1.ErrorResponse(`Bootcamp with Id ${req.params.id} not found!`, 404));
         return;
+    }
+    const user = yield User_1.User.findById(req.headers.userId);
+    //Make sure user is the bootcamop owner
+    if (bootcamp.user.toString() == (user === null || user === void 0 ? void 0 : user.id.toString()) &&
+        (user === null || user === void 0 ? void 0 : user.role) !== 'admin') {
+        next(new errorResponse_1.ErrorResponse(`User ${user.id} is no authorized to upload photo`, 401));
     }
     if (!req.files) {
         next(new errorResponse_1.ErrorResponse(`Please upload a file`, 400));
