@@ -17,6 +17,7 @@ const Bootcamp_1 = require("../models/Bootcamp");
 const errorResponse_1 = require("../utils/errorResponse");
 const async_1 = require("../middleware/async");
 const path_1 = __importDefault(require("path"));
+const User_1 = require("../models/User");
 //@desc     Get all the bootcamps
 //@route    GET /api/v1/bootcamps
 //@access   public
@@ -41,7 +42,17 @@ exports.getBootcamp = (0, async_1.asyncHandler)((req, res, next) => __awaiter(vo
 //@route    POST /api/v1/bootcamps
 //@access   private
 exports.createBootcamp = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const newBootcamp = yield Bootcamp_1.Bootcamp.create(req.body);
+    // Check for published bootcamp
+    const publishedBootcamp = yield Bootcamp_1.Bootcamp.findOne({
+        user: req.headers.userId,
+    });
+    //If the user is not an admin, they can only add one bootcamp
+    const loggedInUser = yield User_1.User.findById(req.headers.userId);
+    if (publishedBootcamp && (loggedInUser === null || loggedInUser === void 0 ? void 0 : loggedInUser.role) !== 'admin') {
+        next(new errorResponse_1.ErrorResponse(`The user with ID ${req.headers.userId} has already published a bootcamp`, 400));
+        return;
+    }
+    const newBootcamp = yield Bootcamp_1.Bootcamp.create(Object.assign(Object.assign({}, req.body), { user: req.headers.userId }));
     res.status(201).json({
         success: true,
         data: newBootcamp,

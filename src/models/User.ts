@@ -1,4 +1,4 @@
-import mongoose, { InferSchemaType, Schema } from 'mongoose';
+import mongoose, { InferSchemaType, Schema, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt, { PrivateKey, Secret } from 'jsonwebtoken';
 

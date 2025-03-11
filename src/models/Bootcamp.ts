@@ -104,6 +104,11 @@ export const BootcampSchema = new Schema(
       type: Date,
       default: Date.now,
     },
+    user: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: 'Users',
+    },
   },
   {
     toJSON: { virtuals: true },

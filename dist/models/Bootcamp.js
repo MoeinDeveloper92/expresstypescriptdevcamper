@@ -117,6 +117,11 @@ exports.BootcampSchema = new mongoose_1.Schema({
         type: Date,
         default: Date.now,
     },
+    user: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Users',
+    },
 }, {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },

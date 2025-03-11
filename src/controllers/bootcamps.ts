@@ -4,6 +4,7 @@ import { ErrorResponse } from '../utils/errorResponse';
 import { asyncHandler } from '../middleware/async';
 import { UploadedFile } from 'express-fileupload';
 import path from 'path';
+import { User } from '../models/User';
 //@desc     Get all the bootcamps
 //@route    GET /api/v1/bootcamps
 //@access   public
@@ -37,7 +38,25 @@ export const getBootcamp = asyncHandler(
 //@access   private
 export const createBootcamp = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const newBootcamp = await Bootcamp.create(req.body);
+    // Check for published bootcamp
+    const publishedBootcamp = await Bootcamp.findOne({
+      user: req.headers.userId,
+    });
+    //If the user is not an admin, they can only add one bootcamp
+    const loggedInUser = await User.findById(req.headers.userId);
+    if (publishedBootcamp && loggedInUser?.role !== 'admin') {
+      next(
+        new ErrorResponse(
+          `The user with ID ${req.headers.userId} has already published a bootcamp`,
+          400
+        )
+      );
+      return;
+    }
+    const newBootcamp = await Bootcamp.create({
+      ...req.body,
+      user: req.headers.userId,
+    });
     res.status(201).json({
       success: true,
       data: newBootcamp,

@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { Bootcamp } from './models/Bootcamp';
 import { Course } from './models/Course';
 import path = require('path');
+import { User } from './models/User';
 //Load env vars
 dotenv.config({});
 
@@ -17,11 +18,15 @@ const bootcamps = JSON.parse(
 const courses = JSON.parse(
   fs.readFileSync(path.join(process.cwd(), '_data', 'courses.json'), 'utf-8')
 );
+const users = JSON.parse(
+  fs.readFileSync(path.join(process.cwd(), '_data', 'users.json'), 'utf-8')
+);
 //Import into the DB
 const importData = async () => {
   try {
     await Bootcamp.create(bootcamps);
     await Course.create(courses);
+    await User.create(users);
     console.log('Data Imported....');
     process.exit();
   } catch (error) {
@@ -34,6 +39,7 @@ const deleteData = async () => {
   try {
     await Bootcamp.deleteMany();
     await Course.deleteMany();
+    await User.deleteMany();
     console.log(`Data Deleted...`);
     process.exit();
   } catch (error) {
