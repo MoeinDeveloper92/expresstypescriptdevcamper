@@ -12,12 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.forgotPassowrd = exports.getMe = exports.login = exports.register = void 0;
+exports.updatePassword = exports.updateDetails = exports.resetPassword = exports.forgotPassowrd = exports.getMe = exports.login = exports.register = void 0;
 const errorResponse_1 = require("../utils/errorResponse");
 const async_1 = require("../middleware/async");
 const User_1 = require("../models/User");
 const generateCookieResponse_1 = require("../utils/generateCookieResponse");
 const sendEmail_1 = __importDefault(require("../utils/sendEmail"));
+const crypto_1 = __importDefault(require("crypto"));
 //@desc     Register a user
 //@route    POST /api/v1/auth/register
 //@access   Public
@@ -100,5 +101,66 @@ exports.forgotPassowrd = (0, async_1.asyncHandler)((req, res, next) => __awaiter
         yield user.save({ validateBeforeSave: false });
         next(new errorResponse_1.ErrorResponse('Email could not be sent!', 500));
     }
+}));
+//@desc   reset password
+//@route  PUT /api/v1/auth/resetpassword/:resettoken
+//@access Protected
+exports.resetPassword = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    //Get hashed token
+    const resetPasswordToken = crypto_1.default
+        .createHash('sha256')
+        .update(req.params.resettoken)
+        .digest('hex');
+    const user = yield User_1.User.findOne({
+        resetPasswordToken,
+        resetPasswordExpire: {
+            $gt: Date.now(),
+        },
+    }).select('+password');
+    if (!user) {
+        next(new errorResponse_1.ErrorResponse('Invalid Token!', 400));
+        return;
+    }
+    // Set new password and clear reset fields
+    user.password = req.body.password;
+    user.resetPasswordExpire = undefined;
+    user.resetPasswordToken = undefined;
+    yield user.save();
+    (0, generateCookieResponse_1.sendTokenResponse)(user, 200, res);
+}));
+//@desc   Update user's details
+//@route  PUT /api/v1/auth/updatedetails
+//@access Protected
+exports.updateDetails = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const fieldsToUpdate = {
+        name: req.body.name,
+        email: req.body.email,
+    };
+    const user = yield User_1.User.findByIdAndUpdate(req.headers.userId, fieldsToUpdate, {
+        new: true,
+        runValidators: true,
+    });
+    res.status(200).json({
+        success: true,
+        data: user,
+    });
+}));
+//@desc   update password
+//@route  PUT /api/v1/auth/updatepassword
+//@access Protected
+exports.updatePassword = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield User_1.User.findById(req.headers.userId).select('+password');
+    if (!user) {
+        next(new errorResponse_1.ErrorResponse('user not found', 404));
+        return;
+    }
+    //Check curernt password
+    if (!(yield (user === null || user === void 0 ? void 0 : user.matchPassword(req.body.currentPassword)))) {
+        next(new errorResponse_1.ErrorResponse('Password is incorrect', 401));
+        return;
+    }
+    user.password = req.body.newPassword;
+    yield user.save();
+    (0, generateCookieResponse_1.sendTokenResponse)(user, 200, res);
 }));
 //# sourceMappingURL=auth.js.map

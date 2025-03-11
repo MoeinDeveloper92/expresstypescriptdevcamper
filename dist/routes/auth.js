@@ -11,5 +11,8 @@ router.route('/register').post(auth_1.register);
 router.route('/login').post(auth_1.login);
 router.route('/me').get(guard_1.protect, auth_1.getMe);
 router.route('/forgotpassword').post(auth_1.forgotPassowrd);
+router.route('/resetpassword/:resettoken').put(auth_1.resetPassword);
+router.route('/updatedetails').put(guard_1.protect, auth_1.updateDetails);
+router.route('/updatepassword').put(guard_1.protect, auth_1.updatePassword);
 exports.default = router;
 //# sourceMappingURL=auth.js.map
