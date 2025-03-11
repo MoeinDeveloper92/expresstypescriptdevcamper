@@ -36,9 +36,6 @@ exports.protect = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0
         //Extract payload from the token
         const secret = process.env.JWT_SECRET;
         const decoded = jsonwebtoken_1.default.verify(token, secret);
-        console.log('DECODED=>>>>>', decoded);
-        console.log(decoded.iat);
-        console.log(decoded._id);
         req.headers['userId'] = decoded._id;
         console.log(req.headers.userId);
         next();
