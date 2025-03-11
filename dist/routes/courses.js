@@ -16,11 +16,11 @@ router
     path: 'bootcamp',
     select: 'name description',
 }), courses_1.getCourses)
-    .post(guard_1.protect, courses_1.createCourse);
+    .post(guard_1.protect, (0, guard_1.authorize)('publisher', 'admin'), courses_1.createCourse);
 router
     .route('/:id')
     .get(courses_1.getCourse)
-    .put(guard_1.protect, courses_1.updateCourse)
-    .delete(guard_1.protect, courses_1.deleteCourse);
+    .put(guard_1.protect, (0, guard_1.authorize)('publisher', 'admin'), courses_1.updateCourse)
+    .delete(guard_1.protect, (0, guard_1.authorize)('publisher', 'admin'), courses_1.deleteCourse);
 exports.default = router;
 //# sourceMappingURL=courses.js.map

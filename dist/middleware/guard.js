@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.protect = void 0;
+exports.authorize = exports.protect = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const async_1 = require("./async");
 const errorResponse_1 = require("../utils/errorResponse");
+const User_1 = require("../models/User");
 //Protect Routes
 exports.protect = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let token;
@@ -37,7 +38,11 @@ exports.protect = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0
         const secret = process.env.JWT_SECRET;
         const decoded = jsonwebtoken_1.default.verify(token, secret);
         req.headers['userId'] = decoded._id;
-        console.log(req.headers.userId);
+        const user = yield User_1.User.findById(decoded._id);
+        if (!user) {
+            next(new errorResponse_1.ErrorResponse(`You are not authorized user to have access to this route`, 401));
+        }
+        req.headers['user'] = JSON.stringify(user);
         next();
     }
     catch (error) {
@@ -45,4 +50,16 @@ exports.protect = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0
         return;
     }
 }));
+//Grant access to specific roles
+const authorize = (...roles) => {
+    return (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        const user = yield User_1.User.findById(req.headers.userId);
+        if (!roles.includes(user === null || user === void 0 ? void 0 : user.role)) {
+            next(new errorResponse_1.ErrorResponse(`User role: ${user === null || user === void 0 ? void 0 : user.role} is not authorized to access this route!  `, 403));
+            return;
+        }
+        next();
+    });
+};
+exports.authorize = authorize;
 //# sourceMappingURL=guard.js.map
