@@ -8,12 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMe = exports.login = exports.register = void 0;
+exports.forgotPassowrd = exports.getMe = exports.login = exports.register = void 0;
 const errorResponse_1 = require("../utils/errorResponse");
 const async_1 = require("../middleware/async");
 const User_1 = require("../models/User");
 const generateCookieResponse_1 = require("../utils/generateCookieResponse");
+const sendEmail_1 = __importDefault(require("../utils/sendEmail"));
 //@desc     Register a user
 //@route    POST /api/v1/auth/register
 //@access   Public
@@ -62,5 +66,39 @@ exports.getMe = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, 
         succecss: true,
         data: user,
     });
+}));
+//@desc   Forogot password
+//@route  GET /api/v1/auth/forgotpassword
+//@access Public
+exports.forgotPassowrd = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield User_1.User.findOne({ email: req.body.email });
+    if (!user) {
+        next(new errorResponse_1.ErrorResponse(`User ${req.body.email} does not exist!`, 404));
+        return;
+    }
+    //Get reset Token
+    const resetToken = user.getResetPasswordToken();
+    yield user.save({ validateBeforeSave: false });
+    //create reset url
+    const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/resetpassword/${resetToken}`;
+    const message = `You are getting this email because you (or someone else) has requested the reset of a password. Please make a PUT request to:\n\n ${resetUrl}`;
+    try {
+        yield (0, sendEmail_1.default)({
+            email: user.email,
+            message,
+            subject: 'Password reset Token',
+        });
+        res.status(200).json({
+            success: true,
+            data: 'email sent successuflly!',
+        });
+    }
+    catch (error) {
+        //get ride of tokens in DB
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+        yield user.save({ validateBeforeSave: false });
+        next(new errorResponse_1.ErrorResponse('Email could not be sent!', 500));
+    }
 }));
 //# sourceMappingURL=auth.js.map

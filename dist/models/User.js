@@ -49,6 +49,7 @@ exports.User = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const crypto_1 = __importDefault(require("crypto"));
 const UserSchema = new mongoose_1.Schema({
     name: {
         type: String,
@@ -112,6 +113,20 @@ UserSchema.methods.matchPassword = function (enteredPassword) {
         const isMatch = yield bcryptjs_1.default.compare(enteredPassword, this.password);
         return isMatch;
     });
+};
+//Genereate and hash the passowrd Token
+UserSchema.methods.getResetPasswordToken = function () {
+    //Generate the Token
+    //This will give us a buffer them we should convert it to string
+    const resetToken = crypto_1.default.randomBytes(20).toString('hex');
+    //Hash the token and set to resetPasswordToken field
+    this.resetPasswordToken = crypto_1.default
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+    //Set the expire
+    this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+    return resetToken;
 };
 const User = mongoose_1.default.model('Users', UserSchema);
 exports.User = User;

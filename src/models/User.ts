@@ -1,7 +1,7 @@
 import mongoose, { InferSchemaType, Schema, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt, { PrivateKey, Secret } from 'jsonwebtoken';
-
+import crypto from 'crypto';
 const UserSchema = new Schema({
   name: {
     type: String,
@@ -69,10 +69,29 @@ UserSchema.methods.matchPassword = async function (
   return isMatch;
 };
 
+//Genereate and hash the passowrd Token
+UserSchema.methods.getResetPasswordToken = function () {
+  //Generate the Token
+  //This will give us a buffer them we should convert it to string
+  const resetToken = crypto.randomBytes(20).toString('hex');
+
+  //Hash the token and set to resetPasswordToken field
+  this.resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  //Set the expire
+  this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
+};
+
 export interface IUser extends InferSchemaType<typeof UserSchema>, Document {
   hashPassword: (password: string) => void;
   getSignedJwtToken: () => string;
   matchPassword: (enteredPassword: string) => Promise<boolean>;
+  getResetPasswordToken: () => string;
 }
 
 const User = mongoose.model<IUser>('Users', UserSchema);

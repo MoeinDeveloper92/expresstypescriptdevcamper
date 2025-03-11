@@ -82,6 +82,13 @@ exports.updateCourse = (0, async_1.asyncHandler)((req, res, next) => __awaiter(v
         next(new errorResponse_1.ErrorResponse(`Course ${req.params.id} not found`, 404));
         return;
     }
+    const user = yield User_1.User.findById(req.headers.userId);
+    //Make sure the user is the owner of the bootcamp
+    if (course.user.toString() !== req.headers.userId &&
+        (user === null || user === void 0 ? void 0 : user.role) === 'admin') {
+        next(new errorResponse_1.ErrorResponse(`User ${user.id} is not authorized to update the course ${req.params.id}`, 401));
+        return;
+    }
     //update cpurse
     course = yield Course_1.Course.findByIdAndUpdate(req.params.id, req.body, {
         runValidators: true,
@@ -99,6 +106,13 @@ exports.deleteCourse = (0, async_1.asyncHandler)((req, res, next) => __awaiter(v
     let course = yield Course_1.Course.findById(req.params.id);
     if (!course) {
         next(new errorResponse_1.ErrorResponse(`Course ${req.params.id} not found`, 404));
+        return;
+    }
+    const user = yield User_1.User.findById(req.headers.userId);
+    //Make sure the user is the owner of the bootcamp
+    if (course.user.toString() !== req.headers.userId &&
+        (user === null || user === void 0 ? void 0 : user.role) === 'admin') {
+        next(new errorResponse_1.ErrorResponse(`User ${user.id} is not authorized to delete the course ${req.params.id}`, 401));
         return;
     }
     //delete course

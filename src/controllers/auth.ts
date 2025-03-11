@@ -1,8 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { ErrorResponse } from '../utils/errorResponse';
 import { asyncHandler } from '../middleware/async';
-import { User } from '../models/User';
+import { IUser, User } from '../models/User';
 import { sendTokenResponse } from '../utils/generateCookieResponse';
+import sendEmail from '../utils/sendEmail';
+import crypto from 'crypto';
+import { Document, Model } from 'mongoose';
 
 //@desc     Register a user
 //@route    POST /api/v1/auth/register
@@ -64,5 +67,84 @@ export const getMe = asyncHandler(
       succecss: true,
       data: user,
     });
+  }
+);
+
+//@desc   Forogot password
+//@route  GET /api/v1/auth/forgotpassword
+//@access Public
+export const forgotPassowrd = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+      next(new ErrorResponse(`User ${req.body.email} does not exist!`, 404));
+      return;
+    }
+
+    //Get reset Token
+    const resetToken = user.getResetPasswordToken();
+
+    await user.save({ validateBeforeSave: false });
+
+    //create reset url
+    const resetUrl = `${req.protocol}://${req.get(
+      'host'
+    )}/api/v1/resetpassword/${resetToken}`;
+
+    const message = `You are getting this email because you (or someone else) has requested the reset of a password. Please make a PUT request to:\n\n ${resetUrl}`;
+
+    try {
+      await sendEmail({
+        email: user.email,
+        message,
+        subject: 'Password reset Token',
+      });
+
+      res.status(200).json({
+        success: true,
+        data: 'email sent successuflly!',
+      });
+    } catch (error) {
+      //get ride of tokens in DB
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpire = undefined;
+      await user.save({ validateBeforeSave: false });
+      next(new ErrorResponse('Email could not be sent!', 500));
+    }
+  }
+);
+
+//@desc   reset password
+//@route  PUT /api/v1/auth/resetpassword/:resettoken
+//@access Protected
+export const resetPassword = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    //Get hashed token
+    const resetPasswordToken = crypto
+      .createHash('sha256')
+      .update(req.params.resettoken)
+      .digest('hex');
+
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: {
+        $gt: Date.now(),
+      },
+    }).select('+password');
+
+    if (!user) {
+      next(new ErrorResponse('Invalid Token!', 400));
+      return;
+    }
+
+    // Set new password and clear reset fields
+    user.password = req.body.password;
+    user.resetPasswordExpire = undefined;
+    user.resetPasswordToken = undefined;
+
+    await user.save();
+
+    sendTokenResponse(user, 200, res);
   }
 );

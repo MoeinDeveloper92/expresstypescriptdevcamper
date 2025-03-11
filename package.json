@@ -20,6 +20,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/mongoose": "^5.11.97",
     "@types/morgan": "^1.9.9",
+    "@types/nodemailer": "^6.4.17",
     "bcryptjs": "^3.0.2",
     "colorts": "^0.1.63",
     "cookie-parser": "^1.4.7",
@@ -29,6 +30,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.12.1",
     "morgan": "^1.10.0",
+    "nodemailer": "^6.10.0",
     "slugify": "^1.6.6"
   },
   "devDependencies": {
