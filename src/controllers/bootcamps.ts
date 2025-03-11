@@ -76,6 +76,20 @@ export const deleteBootcamp = asyncHandler(
       );
       return;
     }
+    const user = await User.findById(req.headers.userId);
+    //Make sure user is the owner of bootcamop
+    if (
+      bootcamp.user.toString() !== req.headers.userId &&
+      user?.role !== 'admin'
+    ) {
+      next(
+        new ErrorResponse(
+          `User ${req.headers.userId} is not authorized to delete this bootcamp!`,
+          401
+        )
+      );
+      return;
+    }
     await Bootcamp.findByIdAndDelete(req.params.id);
     res.status(200).json({
       success: true,
@@ -89,19 +103,39 @@ export const deleteBootcamp = asyncHandler(
 //@access   private
 export const updateBootcamp = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const bootcamp = await Bootcamp.findById(req.params.id);
     if (!bootcamp) {
       next(
         new ErrorResponse(`Bootcamp with Id ${req.params.id} not found!`, 404)
       );
       return;
     }
+    const user = await User.findById(req.headers.userId);
+    //Make sure  user is bootcamp owner
+    if (
+      bootcamp.user.toString() !== req.headers.userId?.toString() &&
+      user?.role !== 'admin'
+    ) {
+      next(
+        new ErrorResponse(
+          `User ${req.headers.userId} is not authorized to update this bootcamp!`,
+          401
+        )
+      );
+      return;
+    }
+
+    const updatedBootcamp = await Bootcamp.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
     res.status(200).json({
       success: true,
-      data: bootcamp,
+      data: updatedBootcamp,
     });
   }
 );

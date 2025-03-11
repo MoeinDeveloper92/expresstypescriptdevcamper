@@ -77,17 +77,26 @@ exports.deleteBootcamp = (0, async_1.asyncHandler)((req, res, next) => __awaiter
 //@route    PUT /api/v1/bootcamps/:id
 //@access   private
 exports.updateBootcamp = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const bootcamp = yield Bootcamp_1.Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true,
-    });
+    var _a;
+    const bootcamp = yield Bootcamp_1.Bootcamp.findById(req.params.id);
     if (!bootcamp) {
         next(new errorResponse_1.ErrorResponse(`Bootcamp with Id ${req.params.id} not found!`, 404));
         return;
     }
+    const user = yield User_1.User.findById(req.headers.userId);
+    //Make sure  user is bootcamp owner
+    if (bootcamp.user.toString() !== ((_a = req.headers.userId) === null || _a === void 0 ? void 0 : _a.toString()) &&
+        (user === null || user === void 0 ? void 0 : user.role) !== 'admin') {
+        next(new errorResponse_1.ErrorResponse(`User ${req.headers.userId} is not authorized to update this bootcamp!`, 401));
+        return;
+    }
+    const updatedBootcamp = yield Bootcamp_1.Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true,
+    });
     res.status(200).json({
         success: true,
-        data: bootcamp,
+        data: updatedBootcamp,
     });
 }));
 //@desc     Get bootcamps within a raidus
